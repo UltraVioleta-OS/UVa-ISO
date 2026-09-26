@@ -1,0 +1,10 @@
+### este comando para definir la config antes de hacer build en la terminal
+lb config \
+  --distribution trixie \
+  --archive-areas "main contrib non-free non-free-firmware" \
+  --debian-installer netinst \
+  --debian-installer-gui true \
+  --binary-images iso-hybrid \
+  --iso-application "UltraVioleta OS" \
+  --iso-volume "UltraVioleta OS" \
+  --iso-publisher "UVa-team/UltraVioletaOS"
