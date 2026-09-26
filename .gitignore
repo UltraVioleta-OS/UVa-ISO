@@ -1,0 +1,11 @@
+chroot/
+binary/
+.build/
+cache/
+*.iso
+*.img
+*.zsync
+*.contents
+*.packages
+*.files
+*.list
