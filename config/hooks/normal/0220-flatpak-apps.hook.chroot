@@ -1,0 +1,31 @@
+#!/bin/sh
+set -u
+warn() { echo "WARN: $1 -- revisar manualmente" >&2; }
+
+# flatpak ya se instaló desde apt-native-apps.list.chroot
+flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo \
+  || warn "no se pudo agregar el remoto Flathub"
+
+# ---------------------------------------------------------------------------
+# Obsidian ya se instaló vía .deb (hook 0210). Si preferís Flatpak en vez de
+# .deb, comentá esa parte del hook 0210 y descomentá la línea de abajo.
+# flatpak install -y --system flathub md.obsidian.Obsidian || warn "Obsidian flatpak"
+# ---------------------------------------------------------------------------
+
+# --- Notion (no oficial en Linux; cliente Electron no oficial más mantenido) ---
+flatpak install -y --system flathub io.github.mrfoto.NotionApp \
+  || warn "Notion: revisar el ID actual en https://flathub.org (buscar 'Notion'), los ID de apps no oficiales cambian seguido"
+
+# --- Proton Mail (oficial, publicado también en Flathub) ---
+flatpak install -y --system flathub me.proton.Mail \
+  || warn "Proton Mail: revisar ID en flathub.org o usar el .deb oficial de https://proton.me/mail/download"
+
+# --- Proton Pass (oficial) ---
+flatpak install -y --system flathub me.proton.Pass \
+  || warn "Proton Pass: revisar ID en flathub.org o usar el .deb oficial de https://proton.me/pass/download/linux"
+
+# --- Dopamine (reproductor de mp3) ---
+flatpak install -y --system flathub org.dopamine_player.Dopamine \
+  || warn "Dopamine: no está confirmado en Flathub con ese ID; revisar https://github.com/digimezzo/dopamine/releases (hay .deb/AppImage) e instalar manualmente si hace falta"
+
+exit 0

@@ -1,0 +1,5 @@
+#!/bin/sh
+# Se ejecuta en el chroot; el usuario 'user' recién lo crea live-config al arrancar,
+# así que esto solo asegura que exista la config necesaria — el alta real del usuario
+# pasa en el primer boot, no acá.
+mkdir -p /etc/skel

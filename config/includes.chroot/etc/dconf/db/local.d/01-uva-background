@@ -1,0 +1,7 @@
+[org/gnome/desktop/background]
+picture-uri='file:///usr/share/backgrounds/uva/wallpaper-light.jpg'
+picture-uri-dark='file:///usr/share/backgrounds/uva/wallpaper-dark.jpg'
+picture-options='zoom'
+
+[org/gnome/desktop/screensaver]
+picture-uri='file:///usr/share/backgrounds/uva/wallpaper-dark.jpg'

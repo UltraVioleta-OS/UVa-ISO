@@ -1,0 +1,33 @@
+#!/bin/sh
+set -u
+# Crea lanzadores .desktop que abren cada servicio en una ventana propia de
+# Brave (--app=), sin barra de direcciones ni pestañas: se siente como una
+# app nativa aunque en realidad sea la web. Útil para lo que NO tiene
+# instalador de Linux: Figma, Notion Calendar, ChatGPT y WhatsApp.
+#
+# Affinity (Photo/Designer/Publisher) NO tiene ni versión Linux ni versión
+# web, así que no se puede resolver de esta forma; no se genera acceso.
+# Alternativas nativas si hace falta: GIMP, Krita, Inkscape (podés
+# descomentarlas en config/package-lists/apt-native-apps.list.chroot).
+
+make_webapp () {
+  name="$1"; url="$2"; icon="$3"; file="$4"
+  cat > "/usr/share/applications/${file}.desktop" <<EOF
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=${name}
+Comment=${name} (acceso web, vía Brave)
+Exec=brave-browser --app=${url}
+Icon=${icon}
+Terminal=false
+Categories=Network;WebBrowser;
+EOF
+}
+
+make_webapp "Figma"          "https://www.figma.com"          "brave-browser" "figma-webapp"
+make_webapp "Notion Calendar" "https://calendar.notion.so"     "brave-browser" "notion-calendar-webapp"
+make_webapp "ChatGPT"         "https://chatgpt.com"            "brave-browser" "chatgpt-webapp"
+make_webapp "WhatsApp"        "https://web.whatsapp.com"       "brave-browser" "whatsapp-webapp"
+
+exit 0

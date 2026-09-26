@@ -1,0 +1,25 @@
+#!/bin/sh
+set -u
+warn() { echo "WARN: $1 -- revisar manualmente" >&2; }
+
+# Los task-*-desktop de Debian instalan firefox-esr como dependencia. Lo
+# purgamos y dejamos Brave (y Opera como segunda opción) instalados.
+apt-get purge -y firefox-esr || warn "firefox-esr no estaba instalado o no se pudo purgar"
+apt-get autoremove -y || true
+
+# Brave como navegador por defecto para todo usuario nuevo (via mimeapps.list
+# en /etc/skel, que se copia a $HOME de cada usuario que se crea).
+mkdir -p /etc/skel/.config
+cat > /etc/skel/.config/mimeapps.list <<'EOF'
+[Default Applications]
+text/html=brave-browser.desktop
+x-scheme-handler/http=brave-browser.desktop
+x-scheme-handler/https=brave-browser.desktop
+x-scheme-handler/about=brave-browser.desktop
+x-scheme-handler/unknown=brave-browser.desktop
+EOF
+
+# xdg-settings a nivel sistema (aplica en la sesión live y como fallback)
+xdg-settings set default-web-browser brave-browser.desktop || true
+
+exit 0

@@ -1,0 +1,56 @@
+#!/bin/sh
+set -u
+warn() { echo "WARN: $1 -- revisar manualmente" >&2; }
+FONT_DIR=/usr/share/fonts/truetype/custom
+mkdir -p "$FONT_DIR"
+TMP=/tmp/fonts
+mkdir -p "$TMP"
+
+# ---------------------------------------------------------------------------
+# JetBrains Mono: SÍ está en los repos de Debian (fonts-jetbrains-mono, ya
+# instalada desde apt-native-apps.list.chroot). Nada que hacer acá.
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# Nunito Sans: NO está empaquetada en Debian -> se baja del repo oficial de
+# Google Fonts en GitHub.
+# ---------------------------------------------------------------------------
+if ! fc-list | grep -qi "Nunito Sans"; then
+  git clone --depth=1 --filter=blob:none --sparse \
+    https://github.com/google/fonts.git "$TMP/gfonts" 2>/dev/null
+  if [ -d "$TMP/gfonts" ]; then
+    ( cd "$TMP/gfonts" && git sparse-checkout set ofl/nunitosans ) \
+      && cp "$TMP/gfonts/ofl/nunitosans"/*.ttf "$FONT_DIR"/ 2>/dev/null
+  fi
+  [ -n "$(ls -A "$FONT_DIR"/NunitoSans* 2>/dev/null)" ] \
+    || warn "Nunito Sans: no se pudo descargar, revisar https://fonts.google.com/specimen/Nunito+Sans"
+fi
+
+# ---------------------------------------------------------------------------
+# Sora: tampoco está en Debian -> mismo mecanismo.
+# ---------------------------------------------------------------------------
+if ! fc-list | grep -qi "Sora"; then
+  git clone --depth=1 --filter=blob:none --sparse \
+    https://github.com/google/fonts.git "$TMP/gfonts2" 2>/dev/null
+  if [ -d "$TMP/gfonts2" ]; then
+    ( cd "$TMP/gfonts2" && git sparse-checkout set ofl/sora ) \
+      && cp "$TMP/gfonts2/ofl/sora"/*.ttf "$FONT_DIR"/ 2>/dev/null
+  fi
+  [ -n "$(ls -A "$FONT_DIR"/Sora* 2>/dev/null)" ] \
+    || warn "Sora: no se pudo descargar, revisar https://fonts.google.com/specimen/Sora"
+fi
+
+rm -rf "$TMP"
+fc-cache -f "$FONT_DIR" || true
+
+# Fuente de interfaz por defecto (GTK) para usuarios nuevos: Nunito Sans para
+# texto de interfaz, JetBrains Mono para monoespaciada. Esto sólo aplica en
+# entornos GTK (GNOME/Xfce/MATE/Cinnamon); KDE/LXQt usan su propio esquema
+# (kdeglobals) y no se tocan acá para no romper su theming.
+mkdir -p /etc/skel/.config/gtk-3.0
+cat > /etc/skel/.config/gtk-3.0/settings.ini <<'EOF'
+[Settings]
+gtk-font-name=Nunito Sans 10
+EOF
+
+exit 0

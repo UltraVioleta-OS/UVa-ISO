@@ -1,0 +1,44 @@
+# Todo lo de acá se instala directo desde los repos oficiales de Debian
+# (main/contrib/non-free/non-free-firmware, ya habilitados en auto/config).
+# No requieren agregar ningún repo externo.
+
+# --- Git / control de versiones ---
+git
+git-lfs
+
+# --- Multimedia ---
+vlc
+obs-studio
+
+# --- Compresión ---
+p7zip-full
+unrar-free
+
+# --- Terminal / shell ---
+zsh
+curl
+wget
+ca-certificates
+gnupg
+
+# --- Gaming ---
+# steam-installer NO va acá: necesita la arquitectura i386 habilitada
+# primero (dpkg --add-architecture i386), y este archivo se procesa antes
+# de que se pueda hacer eso. Se instala en
+# hooks/normal/0200-repos-thirdparty.hook.chroot en su lugar.
+
+# --- Editor de código (Debian empaqueta VS Code "codium" o el propio "code"
+# no está en repos oficiales; VSCodium sí, pero para VS Code real usamos el
+# repo de Microsoft, ver hooks/normal/0200-repos-thirdparty.hook.chroot).
+
+# --- Fuentes ---
+fonts-jetbrains-mono
+fontconfig
+
+# --- Tematizado / theming ---
+gnome-tweaks
+dconf-cli
+dconf-editor
+
+# --- Flatpak (para las apps que no tienen paquete nativo/deb) ---
+flatpak

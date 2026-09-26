@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# Ejemplo de hook "chroot": se ejecuta DENTRO del sistema que se está armando,
+# durante la etapa de build. Los archivos .hook.chroot deben ser ejecutables.
+#
+# Ejemplo: deshabilitar un servicio por defecto
+# systemctl disable bluetooth.service || true
+
+echo "Hook de ejemplo ejecutado dentro del chroot"

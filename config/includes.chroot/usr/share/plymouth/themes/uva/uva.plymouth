@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=UVa
+Description=UltraVioleta OS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/uva
+ScriptFile=/usr/share/plymouth/themes/uva/uva.script

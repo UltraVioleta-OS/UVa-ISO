@@ -1,0 +1,101 @@
+#!/bin/sh
+set -u
+# Este hook corre DENTRO del chroot durante "lb build" y necesita internet
+# (el build de la ISO, no la instalación final). Agrega los repos APT
+# oficiales de cada programa, con su llave GPG, y los instala.
+#
+# Si alguno falla (repo caído, llave rotada, etc.) no aborta todo el build:
+# imprime un aviso y sigue con el resto.
+
+warn() { echo "WARN: $1 -- revisar manualmente" >&2; }
+
+apt-get update
+
+# ---------------------------------------------------------------------------
+# Brave Browser (reemplaza a Firefox como navegador por defecto)
+# ---------------------------------------------------------------------------
+curl -fsSL https://brave-browser-apt-release.s3.brave.com/brave-core.asc \
+    -o /usr/share/keyrings/brave-browser-archive-keyring.asc \
+  && gpg --dearmor -o /usr/share/keyrings/brave-browser-archive-keyring.gpg \
+       /usr/share/keyrings/brave-browser-archive-keyring.asc \
+  && echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" \
+       > /etc/apt/sources.list.d/brave-browser-release.list \
+  || warn "Brave: no se pudo agregar el repo"
+
+# ---------------------------------------------------------------------------
+# Opera (repo oficial deb.opera.com)
+# ---------------------------------------------------------------------------
+curl -fsSL https://deb.opera.com/archive.key \
+    -o /usr/share/keyrings/opera-archive-keyring.asc \
+  && gpg --dearmor -o /usr/share/keyrings/opera-archive-keyring.gpg \
+       /usr/share/keyrings/opera-archive-keyring.asc \
+  && echo "deb [signed-by=/usr/share/keyrings/opera-archive-keyring.gpg arch=amd64] https://deb.opera.com/opera-stable/ stable non-free" \
+       > /etc/apt/sources.list.d/opera-stable.list \
+  || warn "Opera: no se pudo agregar el repo"
+
+# ---------------------------------------------------------------------------
+# Visual Studio Code (repo oficial de Microsoft)
+# ---------------------------------------------------------------------------
+curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+    -o /usr/share/keyrings/microsoft.asc \
+  && gpg --dearmor -o /usr/share/keyrings/microsoft-archive-keyring.gpg \
+       /usr/share/keyrings/microsoft.asc \
+  && echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft-archive-keyring.gpg] https://packages.microsoft.com/repos/code stable main" \
+       > /etc/apt/sources.list.d/vscode.list \
+  || warn "VS Code: no se pudo agregar el repo"
+
+# ---------------------------------------------------------------------------
+# GitHub Desktop (no tiene versión oficial en Linux; fork mantenido por la
+# comunidad: shiftkey/desktop, vía apt.packages.shiftkey.dev)
+# ---------------------------------------------------------------------------
+curl -fsSL https://apt.packages.shiftkey.dev/gpg.key \
+    | gpg --dearmor -o /usr/share/keyrings/shiftkey-packages.gpg \
+  && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/shiftkey-packages.gpg] https://apt.packages.shiftkey.dev/ubuntu/ any main" \
+       > /etc/apt/sources.list.d/shiftkey-packages.list \
+  || warn "GitHub Desktop: no se pudo agregar el repo (fork comunitario)"
+
+# ---------------------------------------------------------------------------
+# ONLYOFFICE Desktop Editors (repo oficial deb.onlyoffice.com)
+# ---------------------------------------------------------------------------
+curl -fsSL https://download.onlyoffice.com/GPG-KEY-ONLYOFFICE \
+    -o /usr/share/keyrings/onlyoffice.asc \
+  && gpg --dearmor -o /usr/share/keyrings/onlyoffice-archive-keyring.gpg \
+       /usr/share/keyrings/onlyoffice.asc \
+  && echo "deb [signed-by=/usr/share/keyrings/onlyoffice-archive-keyring.gpg] https://download.onlyoffice.com/repo/debian squeeze main" \
+       > /etc/apt/sources.list.d/onlyoffice.list \
+  || warn "OnlyOffice: no se pudo agregar el repo"
+
+# ---------------------------------------------------------------------------
+# Claude Desktop (app oficial de Anthropic para Linux, en beta desde
+# 30/06/2026, repo APT oficial - Debian 12+/Ubuntu 22.04+)
+# ---------------------------------------------------------------------------
+curl -fsSL https://storage.googleapis.com/osprey-downloads-anthropic-com/anthropic-apt/public.gpg \
+    -o /usr/share/keyrings/anthropic.asc \
+  && gpg --dearmor -o /usr/share/keyrings/anthropic-archive-keyring.gpg \
+       /usr/share/keyrings/anthropic.asc \
+  && echo "deb [signed-by=/usr/share/keyrings/anthropic-archive-keyring.gpg] https://storage.googleapis.com/osprey-downloads-anthropic-com/anthropic-apt stable main" \
+       > /etc/apt/sources.list.d/claude-desktop.list \
+  || warn "Claude Desktop: revisar los pasos exactos en https://code.claude.com/docs/en/desktop-linux (la URL/llave del repo puede variar)"
+
+# ---------------------------------------------------------------------------
+# Steam necesita paquetes de 32 bits (i386), que no están habilitados por
+# defecto en un sistema amd64. Hay que agregar la arquitectura ANTES de
+# instalar, y este es el primer punto del build donde se puede hacer sin
+# romper el bootstrap inicial.
+# ---------------------------------------------------------------------------
+dpkg --add-architecture i386 || warn "no se pudo agregar la arquitectura i386"
+
+# ---------------------------------------------------------------------------
+# Instalación final de todos los paquetes que dependen de estos repos
+# ---------------------------------------------------------------------------
+apt-get update
+
+apt-get install -y --no-install-recommends brave-browser || warn "no se pudo instalar brave-browser"
+apt-get install -y --no-install-recommends opera-stable || warn "no se pudo instalar opera-stable"
+apt-get install -y --no-install-recommends code || warn "no se pudo instalar code (VS Code)"
+apt-get install -y --no-install-recommends github-desktop || warn "no se pudo instalar github-desktop"
+apt-get install -y --no-install-recommends onlyoffice-desktopeditors || warn "no se pudo instalar onlyoffice-desktopeditors"
+apt-get install -y --no-install-recommends claude-desktop || warn "no se pudo instalar claude-desktop (ver nota arriba)"
+apt-get install -y --no-install-recommends steam-installer || warn "no se pudo instalar steam-installer (revisar que i386 haya quedado habilitado: dpkg --print-foreign-architectures)"
+
+exit 0

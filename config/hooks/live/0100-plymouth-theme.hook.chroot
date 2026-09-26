@@ -1,0 +1,6 @@
+#!/bin/sh
+update-alternatives --install /usr/share/plymouth/themes/default.plymouth \
+  default.plymouth /usr/share/plymouth/themes/uva/uva.plymouth 100
+update-alternatives --set default.plymouth \
+  /usr/share/plymouth/themes/uva/uva.plymouth
+update-initramfs -u

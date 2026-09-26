@@ -1,0 +1,41 @@
+#!/bin/sh
+set -u
+warn() { echo "WARN: $1 -- revisar manualmente" >&2; }
+
+# zsh ya viene de apt-native-apps.list.chroot
+
+# Instala oh-my-zsh directo en /etc/skel/.oh-my-zsh, así CUALQUIER usuario
+# que se cree después (incluido el que arma Calamares en la instalación)
+# lo recibe automáticamente al copiarse /etc/skel a su $HOME.
+export RUNZSH=no
+export CHSH=no
+export KEEP_ZSHRC=no
+
+git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git /etc/skel/.oh-my-zsh \
+  || { warn "no se pudo clonar oh-my-zsh"; exit 0; }
+
+cp /etc/skel/.oh-my-zsh/templates/zshrc.zsh-template /etc/skel/.zshrc
+
+# Tema y plugins razonables por defecto
+sed -i 's/^ZSH_THEME=.*/ZSH_THEME="agnoster"/' /etc/skel/.zshrc
+sed -i 's/^plugins=(git)/plugins=(git sudo history-substring-search)/' /etc/skel/.zshrc
+echo 'export ZSH="$HOME/.oh-my-zsh"' | cat - /etc/skel/.zshrc > /tmp/zshrc.tmp \
+  && mv /tmp/zshrc.tmp /etc/skel/.zshrc
+
+# zsh como shell por defecto para usuarios nuevos (adduser/useradd)
+if [ -f /etc/adduser.conf ]; then
+  sed -i 's#^DSHELL=.*#DSHELL=/usr/bin/zsh#' /etc/adduser.conf
+  grep -q '^DSHELL=' /etc/adduser.conf || echo 'DSHELL=/usr/bin/zsh' >> /etc/adduser.conf
+fi
+
+# Para el usuario "live" de la sesión en vivo (por si se usa antes de instalar)
+if id live >/dev/null 2>&1; then
+  chsh -s /usr/bin/zsh live || true
+fi
+
+# Para root también, por comodidad al debuguear la ISO
+chsh -s /usr/bin/zsh root || true
+cp -r /etc/skel/.oh-my-zsh /root/.oh-my-zsh 2>/dev/null || true
+cp /etc/skel/.zshrc /root/.zshrc 2>/dev/null || true
+
+exit 0

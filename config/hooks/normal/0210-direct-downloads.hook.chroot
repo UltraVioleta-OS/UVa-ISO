@@ -1,0 +1,64 @@
+#!/bin/sh
+set -u
+warn() { echo "WARN: $1 -- revisar manualmente" >&2; }
+TMP=/tmp/dl
+mkdir -p "$TMP"
+
+# ---------------------------------------------------------------------------
+# Cursor (editor con IA) - no tiene repo APT estable de entrada; se instala
+# desde el .deb oficial y luego el propio programa registra su repo.
+# ---------------------------------------------------------------------------
+curl -fsSL "https://downloads.cursor.com/production/deb/x64/deb" -o "$TMP/cursor.deb" \
+  && apt-get install -y --no-install-recommends "$TMP/cursor.deb" \
+  || warn "Cursor: no se pudo descargar/instalar, revisar https://cursor.com/download"
+
+# ---------------------------------------------------------------------------
+# Discord - no tiene repo APT oficial, solo .deb standalone.
+# ---------------------------------------------------------------------------
+curl -fsSL "https://discord.com/api/download?platform=linux&format=deb" -o "$TMP/discord.deb" \
+  && apt-get install -y --no-install-recommends "$TMP/discord.deb" \
+  || warn "Discord: no se pudo descargar/instalar, revisar https://discord.com/download"
+
+# ---------------------------------------------------------------------------
+# Obsidian - .deb oficial publicado en GitHub Releases (se resuelve la
+# última versión vía la API de GitHub).
+# ---------------------------------------------------------------------------
+OBSIDIAN_URL=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest \
+  | grep -o '"browser_download_url": *"[^"]*amd64\.deb"' \
+  | head -n1 | cut -d'"' -f4)
+if [ -n "${OBSIDIAN_URL:-}" ]; then
+  curl -fsSL "$OBSIDIAN_URL" -o "$TMP/obsidian.deb" \
+    && apt-get install -y --no-install-recommends "$TMP/obsidian.deb" \
+    || warn "Obsidian: se encontró la URL pero falló la instalación"
+else
+  warn "Obsidian: no se pudo resolver la URL del último .deb, revisar https://obsidian.md/download"
+fi
+
+# ---------------------------------------------------------------------------
+# JetBrains WebStorm - no hay paquete APT oficial. Se descarga el tarball y
+# se deja en /opt, con lanzador de escritorio y symlink en /usr/local/bin.
+# Nota: lo ideal a futuro es que cada usuario lo administre con JetBrains
+# Toolbox (https://www.jetbrains.com/toolbox-app/) para tener auto-updates.
+# ---------------------------------------------------------------------------
+WS_URL="https://data.services.jetbrains.com/products/download?platform=linux&code=WS"
+curl -fsSL "$WS_URL" -o "$TMP/webstorm.tar.gz" \
+  && mkdir -p /opt/webstorm \
+  && tar -xzf "$TMP/webstorm.tar.gz" -C /opt/webstorm --strip-components=1 \
+  && ln -sf /opt/webstorm/bin/webstorm.sh /usr/local/bin/webstorm \
+  && cat > /usr/share/applications/webstorm.desktop <<'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=WebStorm
+Icon=/opt/webstorm/bin/webstorm.svg
+Exec=/opt/webstorm/bin/webstorm.sh %f
+Comment=JetBrains WebStorm
+Categories=Development;IDE;
+Terminal=false
+StartupWMClass=jetbrains-webstorm
+EOF
+apt-get install -y --no-install-recommends default-jre || true
+[ -x /opt/webstorm/bin/webstorm.sh ] || warn "WebStorm: no se pudo instalar, revisar https://www.jetbrains.com/webstorm/download/"
+
+rm -rf "$TMP"
+exit 0

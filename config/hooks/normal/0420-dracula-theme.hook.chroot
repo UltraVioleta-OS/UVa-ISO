@@ -1,0 +1,67 @@
+#!/bin/sh
+set -u
+warn() { echo "WARN: $1 -- revisar manualmente" >&2; }
+TMP=/tmp/dracula
+mkdir -p "$TMP"
+
+# ---------------------------------------------------------------------------
+# GTK (GNOME / Xfce / MATE / Cinnamon): tema oficial dracula/gtk
+# ---------------------------------------------------------------------------
+git clone --depth=1 https://github.com/dracula/gtk.git "$TMP/gtk" \
+  && mkdir -p /usr/share/themes \
+  && cp -r "$TMP/gtk" "/usr/share/themes/Dracula" \
+  || warn "Dracula GTK theme: no se pudo clonar"
+
+if [ -d /usr/share/themes/Dracula ]; then
+  cat >> /etc/skel/.config/gtk-3.0/settings.ini <<'EOF'
+gtk-theme-name=Dracula
+gtk-icon-theme-name=Dracula
+EOF
+fi
+
+# Iconos Dracula (opcional, mismo repo tiene variante de iconos separada)
+git clone --depth=1 https://github.com/dracula/gtk.git "$TMP/icons-check" >/dev/null 2>&1 || true
+
+# ---------------------------------------------------------------------------
+# GNOME (vía dconf, aplica al usuario cuando arranca su sesión, ya que dconf
+# es por-usuario; esto sólo deja el default preconfigurado en /etc/skel)
+# ---------------------------------------------------------------------------
+mkdir -p /etc/skel/.config/dconf
+# Nota: dconf no se puede "precargar" fácilmente en /etc/skel porque su base
+# de datos es binaria y depende del usuario. La forma correcta es usar un
+# dconf profile a nivel sistema. Se deja un perfil de ejemplo:
+mkdir -p /etc/dconf/profile /etc/dconf/db/local.d
+cat > /etc/dconf/profile/user <<'EOF'
+user-db:user
+system-db:local
+EOF
+cat > /etc/dconf/db/local.d/00-dracula <<'EOF'
+[org/gnome/desktop/interface]
+gtk-theme='Dracula'
+icon-theme='Dracula'
+color-scheme='prefer-dark'
+EOF
+which dconf >/dev/null 2>&1 && dconf update || true
+
+# ---------------------------------------------------------------------------
+# Terminal / zsh: colores estilo Dracula para el prompt (ya usamos el tema
+# "agnoster" de oh-my-zsh, acá sólo agregamos la paleta de color Dracula
+# para GNOME Terminal / Xfce Terminal si están instalados).
+# ---------------------------------------------------------------------------
+git clone --depth=1 https://github.com/dracula/gnome-terminal.git "$TMP/gnome-terminal" \
+  || warn "Dracula gnome-terminal: no se pudo clonar (opcional)"
+
+# ---------------------------------------------------------------------------
+# VS Code: instala la extensión oficial de Dracula para todo usuario nuevo.
+# code --install-extension funciona sin display (headless), pero instala en
+# el $HOME del usuario que ejecuta el comando, así que lo replicamos a mano
+# en /etc/skel para que aplique a usuarios que todavía no existen.
+# ---------------------------------------------------------------------------
+if command -v code >/dev/null 2>&1; then
+  HOME=/etc/skel code --user-data-dir=/etc/skel/.config/Code \
+    --install-extension dracula-theme.theme-dracula \
+    || warn "VS Code: no se pudo preinstalar la extensión Dracula"
+fi
+
+rm -rf "$TMP"
+exit 0
