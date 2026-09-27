@@ -19,7 +19,9 @@ apply_to_user () {
 echo "=== [1/9] Dependencias básicas (git, zsh, flatpak, curl) ==="
 apt-get update
 apt-get install -y --no-install-recommends git zsh flatpak curl gnupg ca-certificates \
-  pulseaudio-utils alsa-utils || warn "alguna dependencia básica falló"
+  pulseaudio-utils alsa-utils fonts-powerline || warn "alguna dependencia básica falló"
+
+fc-cache -f || true
 
 echo "=== [2/9] Repos de terceros + paquetes (Brave, Opera, VS Code, GitHub Desktop, OnlyOffice, Claude Desktop, Steam) ==="
 curl -fsSL https://brave-browser-apt-release.s3.brave.com/brave-core.asc \
@@ -285,6 +287,11 @@ EOF
 sed -i 's/^#GRUB_DISTRIBUTOR/GRUB_DISTRIBUTOR="UltraVioleta OS"/' /etc/default/grub 2>/dev/null \
   || echo 'GRUB_DISTRIBUTOR="UltraVioleta OS"' >> /etc/default/grub
 update-grub || grub-mkconfig -o /boot/grub/grub.cfg || warn "no se pudo regenerar grub.cfg"
+
+echo "=== Corrigiendo permisos de $TARGET_HOME (root -> usuario real) ===" 
+if [ -n "$TARGET_HOME" ]; then 
+    chown -R "$TARGET_USER":"$TARGET_USER" "$TARGET_HOME" 
+fi 
 
 echo "=== Listo ==="
 exit 0
