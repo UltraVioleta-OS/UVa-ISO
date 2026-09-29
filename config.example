@@ -1,6 +1,8 @@
 ### este comando para definir la config antes de hacer build en la terminal
-lb config \
+sudo lb config \
   --distribution trixie \
+  --firmware-chroot true \
+  --firmware-binary true \
   --archive-areas "main contrib non-free non-free-firmware" \
   --debian-installer netinst \
   --debian-installer-gui true \

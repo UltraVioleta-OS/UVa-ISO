@@ -6,6 +6,7 @@ f binary/isolinux/utilities.cfg
 f binary/isolinux/install.cfg
 f binary/isolinux/live.cfg
 f binary/sha256sum.txt
+d binary/firmware
 d binary/tools
 f binary/md5sum.txt
 f binary/md5sum.README

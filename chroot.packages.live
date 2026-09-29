@@ -90,7 +90,7 @@ dhcpcd-base	1:10.1.0-11+deb13u4
 dictionaries-common	1.30.10
 diffutils	1:3.10-4
 dirmngr	2.4.7-21+deb13u1+b5
-discord	1.0.159
+discord	1.0.160
 dmidecode	3.6-2
 dmsetup	2:1.02.205-2
 dns-root-data	2025080400~deb13u1
@@ -145,7 +145,7 @@ firmware-realtek	20250410-2
 firmware-siano	20250410-2
 firmware-sof-signed	2025.01-1
 firmware-zd1211	1:1.5-13
-flatpak	1.16.6-1~deb13u2
+flatpak	1.16.6-1~deb13u3
 fontconfig	2.15.0-2.3
 fontconfig-config	2.15.0-2.3
 fonts-crosextra-carlito	20230309-2
@@ -630,11 +630,11 @@ libharfbuzz0b:amd64	10.2.0-1+deb13u1
 libhdf4-0-alt:amd64	4.3.0-1+b1
 libhdf5-310:amd64	1.14.5+repack-3
 libhdf5-hl-310:amd64	1.14.5+repack-3
-libheif-plugin-aomenc:amd64	1.19.8-1+deb13u1
-libheif-plugin-dav1d:amd64	1.19.8-1+deb13u1
-libheif-plugin-libde265:amd64	1.19.8-1+deb13u1
-libheif-plugin-x265:amd64	1.19.8-1+deb13u1
-libheif1:amd64	1.19.8-1+deb13u1
+libheif-plugin-aomenc:amd64	1.23.4-1~deb13u1
+libheif-plugin-dav1d:amd64	1.23.4-1~deb13u1
+libheif-plugin-libde265:amd64	1.23.4-1~deb13u1
+libheif-plugin-x265:amd64	1.23.4-1~deb13u1
+libheif1:amd64	1.23.4-1~deb13u1
 libhidapi-hidraw0:amd64	0.14.0-1+b2
 libhogweed6t64:amd64	3.10.1-1
 libhogweed6t64:i386	3.10.1-1
@@ -1454,7 +1454,7 @@ qtwayland5:amd64	5.15.15-3
 quodlibet	4.6.0-6
 readline-common	8.2-6
 ristretto	0.13.3-1
-rsync	3.4.1+ds1-5+deb13u4
+rsync	3.5.0+ds1-0+deb13u1
 rtkit	0.13-5.1
 samba-libs:amd64	2:4.22.11+dfsg-0+deb13u1
 sane-airscan	0.99.35-1

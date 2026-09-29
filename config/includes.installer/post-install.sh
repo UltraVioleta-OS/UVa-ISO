@@ -19,7 +19,7 @@ apply_to_user () {
 echo "=== [1/9] Dependencias básicas (git, zsh, flatpak, curl) ==="
 apt-get update
 apt-get install -y --no-install-recommends git zsh flatpak curl gnupg ca-certificates \
-  pulseaudio-utils alsa-utils fonts-powerline || warn "alguna dependencia básica falló"
+  pulseaudio-utils alsa-utils pipewire-audio fonts-powerline || warn "alguna dependencia básica falló"
 
 fc-cache -f || true
 
@@ -147,7 +147,6 @@ EOF
 cat > /etc/dconf/db/local.d/00-dracula << 'EOF'
 [org/gnome/desktop/interface]
 gtk-theme='Dracula'
-icon-theme='Dracula'
 color-scheme='prefer-dark'
 EOF
 command -v dconf >/dev/null 2>&1 && dconf update || true
@@ -174,7 +173,6 @@ mkdir -p /etc/skel/.config/gtk-3.0
 cat > /etc/skel/.config/gtk-3.0/settings.ini << 'EOF'
 [Settings]
 gtk-theme-name=Dracula
-gtk-icon-theme-name=Dracula
 gtk-font-name=Nunito Sans 10
 EOF
 apply_to_user .config/gtk-3.0/settings.ini
