@@ -1,3 +1,7 @@
+1. Readme: User and Dev
+2. Others licences
+3. Credits: internos y externos
+
 # Esqueleto básico de live-build (Debian)
 
 Estructura mínima para armar una ISO live de Debian con `live-build`.
