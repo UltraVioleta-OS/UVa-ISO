@@ -26,8 +26,8 @@ f binary/.disk/base_installable
 f binary/.disk/info
 f binary/sha256sum.README
 d binary/live
+f binary/live/initrd.img-6.12.111+deb13-amd64
 f binary/live/filesystem.squashfs
-f binary/live/initrd.img-6.12.107+deb13-amd64
 f binary/live/filesystem.packages-remove
 f binary/live/filesystem.packages
 d binary/boot
