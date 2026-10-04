@@ -1,12 +1,24 @@
 ### este comando para definir la config antes de hacer build en la terminal
 sudo lb config \
   --distribution trixie \
-  --firmware-chroot true \
-  --firmware-binary true \
   --archive-areas "main contrib non-free non-free-firmware" \
   --debian-installer netinst \
   --debian-installer-gui true \
   --binary-images iso-hybrid \
+  --firmware-chroot true \
+  --firmware-binary true \
   --iso-application "UltraVioleta OS" \
   --iso-volume "UltraVioleta OS" \
-  --iso-publisher "UVa-team/UltraVioletaOS"
+  --iso-publisher "UltraVioleta-UV/UltraVioletaOS"
+
+sudo lb config \
+  --distribution trixie \
+  --archive-areas "main contrib non-free non-free-firmware" \
+  --debian-installer live \
+  --debian-installer-gui true \
+  --binary-images iso-hybrid \
+  --firmware-chroot true \
+  --firmware-binary true \
+  --iso-application "UltraVioleta OS" \
+  --iso-volume "UltraVioleta OS" \
+  --iso-publisher "UltraVioleta-UV/UltraVioletaOS"

@@ -1,9 +1,10 @@
 # Paquetes que se instalan dentro de la imagen live.
 # Un paquete por línea. Ejemplos comunes:
 
-task-xfce-desktop
+task-gnome-desktop
 firefox-esr
 network-manager
 live-boot
 live-config
 live-tools
+gdm3

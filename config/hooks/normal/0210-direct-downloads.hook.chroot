@@ -8,7 +8,7 @@ mkdir -p "$TMP"
 # Cursor (editor con IA) - no tiene repo APT estable de entrada; se instala
 # desde el .deb oficial y luego el propio programa registra su repo.
 # ---------------------------------------------------------------------------
-curl -fsSL "https://downloads.cursor.com/production/deb/x64/deb" -o "$TMP/cursor.deb" \
+curl -fsSL "https://api2.cursor.sh/updates/download/golden/linux-x64-deb/cursor/3.22" -o "$TMP/cursor.deb" \
   && apt-get install -y --no-install-recommends "$TMP/cursor.deb" \
   || warn "Cursor: no se pudo descargar/instalar, revisar https://cursor.com/download"
 
@@ -23,7 +23,7 @@ curl -fsSL "https://discord.com/api/download?platform=linux&format=deb" -o "$TMP
 # Obsidian - .deb oficial publicado en GitHub Releases (se resuelve la
 # última versión vía la API de GitHub).
 # ---------------------------------------------------------------------------
-OBSIDIAN_URL=$(curl -fsSL https://api.github.com/repos/obsidianmd/obsidian-releases/releases/latest \
+OBSIDIAN_URL=$(curl -fsSL https://github.com/obsidianmd/obsidian-releases/releases/download/v1.13.7/obsidian_1.13.7_amd64.deb \
   | grep -o '"browser_download_url": *"[^"]*amd64\.deb"' \
   | head -n1 | cut -d'"' -f4)
 if [ -n "${OBSIDIAN_URL:-}" ]; then
