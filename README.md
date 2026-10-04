@@ -1,5 +1,5 @@
 1. Readme: User and Dev
-2. Others licences
+2. Others licences, cambiar licencia
 3. Credits: internos y externos
 
 # Esqueleto básico de live-build (Debian)
