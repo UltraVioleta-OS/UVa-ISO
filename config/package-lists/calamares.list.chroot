@@ -1,4 +1,3 @@
-grub-efi-amd64-bin
-os-prober
 grub-pc-bin
 grub2-common
+os-prober
