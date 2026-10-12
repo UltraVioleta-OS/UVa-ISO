@@ -3,6 +3,8 @@
 sudo lb config \
   --distribution trixie \
   --archive-areas "main contrib non-free non-free-firmware" \
+  --iso-volume "UVa 0.0.3 alpha" \
+  --image-name "uva-0.0.3-alpha" \
   --debian-installer live \
   --debian-installer-gui true \
   --binary-images iso-hybrid \
